@@ -10,6 +10,18 @@ keenClient = keen.configure({
 });
 
 var app = http.createServer(function(req, res) {
+
+  if(req.url === "/" || req.url === "/style.css" || req.url === "/main.js") {
+    handleContentRequest(req, res);
+  } else {
+    handlePixelRequest(req, res);
+  }
+});
+
+app.listen(process.env.PORT);
+console.log("Server listening on port "+process.env.PORT);
+
+function handlePixelRequest(req, res) {
   res.setHeader("Content-Type", "image/gif");
   res.end(pixel);
 
@@ -56,6 +68,32 @@ var app = http.createServer(function(req, res) {
     console.log("didn't send keen event", req.headers);
   }
 
-});
+}
 
-app.listen(process.env.PORT);
+function handleContentRequest(req, res) {
+  switch(req.url) {
+    case "/":
+      res.setHeader("Content-Type", "text/html");
+      res.end(fs.readFileSync("index.html"));
+      break;
+
+    case "/main.js":
+      console.log("main");
+      res.setHeader("Content-Type", "text/javascript");
+      var file = fs.readFileSync("main.js").toString()
+      file = file.replace(/KEEN_READ_KEY/g, process.env['KEEN_READ_KEY'])
+      file = file.replace(/KEEN_PROJECT_ID/g, process.env['KEEN_PROJECT_ID'])
+      res.end(file);
+      break;
+
+    case "/style.css":
+      console.log("style");
+      res.setHeader("Content-Type", "text/css");
+      res.end(fs.readFileSync("style.css"));
+      break;
+
+    default:
+      res.statusCode = 404;
+      res.end();
+  }
+}
