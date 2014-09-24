@@ -74,13 +74,13 @@ function handleContentRequest(req, res) {
   switch(req.url) {
     case "/":
       res.setHeader("Content-Type", "text/html");
-      res.end(fs.readFileSync("index.html"));
+      res.end(fs.readFileSync(__dirname+"/index.html"));
       break;
 
     case "/main.js":
       console.log("main");
       res.setHeader("Content-Type", "text/javascript");
-      var file = fs.readFileSync("main.js").toString()
+      var file = fs.readFileSync(__dirname+"/main.js").toString()
       file = file.replace(/KEEN_READ_KEY/g, process.env['KEEN_READ_KEY'])
       file = file.replace(/KEEN_PROJECT_ID/g, process.env['KEEN_PROJECT_ID'])
       res.end(file);
@@ -89,7 +89,7 @@ function handleContentRequest(req, res) {
     case "/style.css":
       console.log("style");
       res.setHeader("Content-Type", "text/css");
-      res.end(fs.readFileSync("style.css"));
+      res.end(fs.readFileSync(__dirname+"/style.css"));
       break;
 
     default:
